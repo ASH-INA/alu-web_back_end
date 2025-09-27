@@ -118,7 +118,7 @@ def get_db() -> MySQLConnection:
 
     # Check if database name is provided
     if not database:
-        raise ValueError("PERSONAL_DATA_DB_NAME environment variable is required")
+        raise ValueError("PERSONAL_DATA_DB_NAME environment variable required")
 
     # Create and return database connection
     connection = mysql.connector.connect(
@@ -137,8 +137,9 @@ if __name__ == "__main__":
     logger = get_logger()
 
     # Test the logger with a sample message containing PII
-    test_message = ("name=John Doe;email=john.doe@example.com;phone=123-456-7890;"
-                   "ssn=123-45-6789;password=secret123;age=30;city=New York")
+    test_message = ("""name=John Doe;email=john.doe@example.com;
+                      phone=123-456-7890;
+                   ssn=123-45-6789;password=secret123;age=30;city=New York""")
 
     logger.info(test_message)
 
