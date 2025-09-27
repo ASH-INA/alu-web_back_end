@@ -6,9 +6,12 @@ This module provides functionality to obfuscate personally identifiable
 information (PII) in log messages using regular expressions.
 """
 
+import os
 import re
 import logging
+import mysql.connector
 from typing import List
+from mysql.connector.connection import MySQLConnection
 
 
 # PII fields constant - these are the important fields to redact
@@ -100,18 +103,58 @@ def get_logger() -> logging.Logger:
     return logger
 
 
+def get_db() -> MySQLConnection:
+    """
+    Connect to the MySQL database using environment variables.
+
+    Returns:
+        MySQLConnection object to the database
+    """
+    # Get database credentials from environment variables with defaults
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    database = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    # Check if database name is provided
+    if not database:
+        raise ValueError("PERSONAL_DATA_DB_NAME environment variable is required")
+
+    # Create and return database connection
+    connection = mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database
+    )
+
+    return connection
+
+
 # Test the function and class
 if __name__ == "__main__":
     # Test get_logger function
     logger = get_logger()
 
     # Test the logger with a sample message containing PII
-    test_message = ("""name=John Doe;
-    email=john.doe@example.com;phone=123-456-7890;
-                   ssn=123-45-6789;password=secret123;age=30;city=New York""")
+    test_message = ("name=John Doe;email=john.doe@example.com;phone=123-456-7890;"
+                   "ssn=123-45-6789;password=secret123;age=30;city=New York")
 
     logger.info(test_message)
 
     # Test annotations as required by the main.py example
     print("Logger class:", get_logger.__annotations__.get('return'))
     print("PII_FIELDS: {}".format(len(PII_FIELDS)))
+
+    # Test database connection if environment variables are set
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM users;")
+        for row in cursor:
+            print("User count:", row[0])
+        cursor.close()
+        db.close()
+        print("Database connection successful!")
+    except Exception as e:
+        print("Database connection failed:", e)
