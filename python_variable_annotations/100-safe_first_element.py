@@ -30,7 +30,7 @@ if __name__ == "__main__":
     empty_list = []
 
     print(f"safe_first_element({test_list}) = {safe_first_element(test_list)}")
-    print(f"safe_first_element({test_tuple}) = {safe_first_element(test_tuple)}")
-    print(f"safe_first_element('{test_string}') = {safe_first_element(test_string)}")
-    print(f"safe_first_element({empty_list}) = {safe_first_element(empty_list)}")
+    print(f"safe_first_({test_tuple}) = {safe_first_element(test_tuple)}")
+    print(f"safe_first_('{test_string}') = {safe_first_element(test_string)}")
+    print(f"safe_first_({empty_list}) = {safe_first_element(empty_list)}")
     print(f"Function annotations: {safe_first_element.__annotations__}")
