@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This module provides a function that returns a tuple with a string and a square.
+This module provides a function that returns a tuple with a string and a square
 """
 
 from typing import Union, Tuple
