@@ -11,6 +11,10 @@ import logging
 from typing import List
 
 
+# PII fields constant - these are the important fields to redact
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
     """
@@ -67,26 +71,46 @@ class RedactingFormatter(logging.Formatter):
         return super().format(record)
 
 
+def get_logger() -> logging.Logger:
+    """
+    Create and configure a logger for user data.
+
+    Returns:
+        Configured logging.Logger object
+    """
+    # Create logger named "user_data"
+    logger = logging.getLogger("user_data")
+
+    # Set logging level to INFO
+    logger.setLevel(logging.INFO)
+
+    # Prevent propagation to other loggers
+    logger.propagate = False
+
+    # Create StreamHandler
+    handler = logging.StreamHandler()
+
+    # Set formatter to RedactingFormatter with PII_FIELDS
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    handler.setFormatter(formatter)
+
+    # Add handler to logger
+    logger.addHandler(handler)
+
+    return logger
+
+
 # Test the function and class
 if __name__ == "__main__":
-    # Test filter_datum
-    fields = ["password", "date_of_birth"]
-    messages = [
-        "name=egg;email=eggmin@eggsample.com;password=eggcellent;"
-        "date_of_birth=12/12/1986;",
-        "name=bob;email=bob@dylan.com;password=bobbycool;"
-        "date_of_birth=03/04/1993;"
-    ]
+    # Test get_logger function
+    logger = get_logger()
 
-    print("Testing filter_datum:")
-    for message in messages:
-        print(filter_datum(fields, 'xxx', message, ';'))
+    # Test the logger with a sample message containing PII
+    test_message = ("name=John Doe;email=john.doe@example.com;phone=123-456-7890;"
+                   "ssn=123-45-6789;password=secret123;age=30;city=New York")
 
-    print("\nTesting RedactingFormatter:")
-    # Test RedactingFormatter
-    message = ("name=Bob;email=bob@dylan.com;ssn=000-123-0000;"
-               "password=bobby2019;")
-    log_record = logging.LogRecord("my_logger", logging.INFO, None, None,
-                                   message, None, None)
-    formatter = RedactingFormatter(fields=("email", "ssn", "password"))
-    print(formatter.format(log_record))
+    logger.info(test_message)
+
+    # Test annotations as required by the main.py example
+    print("Logger class:", get_logger.__annotations__.get('return'))
+    print("PII_FIELDS: {}".format(len(PII_FIELDS)))
