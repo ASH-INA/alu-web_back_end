@@ -118,7 +118,7 @@ def get_db() -> MySQLConnection:
 
     # Check if database name is provided
     if not database:
-        raise ValueError("PERSONAL_DATA_DB_NAME environment variable required")
+        raise ValueError("PERSONAL_DATA_DB_NAME environment variable is required")
 
     # Create and return database connection
     connection = mysql.connector.connect(
@@ -131,31 +131,37 @@ def get_db() -> MySQLConnection:
     return connection
 
 
-# Test the function and class
-if __name__ == "__main__":
-    # Test get_logger function
+def main() -> None:
+    """
+    Main function that retrieves and displays filtered user data from database.
+    """
+    # Get the logger
     logger = get_logger()
 
-    # Test the logger with a sample message containing PII
-    test_message = ("""name=John Doe;email=john.doe@example.com;
-                      phone=123-456-7890;
-                   ssn=123-45-6789;password=secret123;age=30;city=New York""")
+    # Get database connection
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
 
-    logger.info(test_message)
+    # Execute query to get all users
+    cursor.execute("SELECT * FROM users;")
 
-    # Test annotations as required by the main.py example
-    print("Logger class:", get_logger.__annotations__.get('return'))
-    print("PII_FIELDS: {}".format(len(PII_FIELDS)))
+    # Process each row
+    for row in cursor:
+        # Build log message in key=value format
+        message_parts = []
+        for key, value in row.items():
+            message_parts.append(f"{key}={value}")
+  
+        # Join parts with semicolon separator
+        log_message = ";".join(message_parts) + ";"
+  
+        # Log the filtered message
+        logger.info(log_message)
 
-    # Test database connection if environment variables are set
-    try:
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute("SELECT COUNT(*) FROM users;")
-        for row in cursor:
-            print("User count:", row[0])
-        cursor.close()
-        db.close()
-        print("Database connection successful!")
-    except Exception as e:
-        print("Database connection failed:", e)
+    # Clean up
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
