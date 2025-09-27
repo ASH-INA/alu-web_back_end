@@ -64,7 +64,10 @@ class Server:
         """
         data = self.get_page(page, page_size)
         total_items = len(self.dataset())
-        total_pages = math.ceil(total_items / page_size) if page_size > 0 else 0
+        if page_size > 0:
+            total_pages = math.ceil(total_items / page_size)
+        else:
+            total_pages = 0
 
         return {
             'page_size': len(data),
