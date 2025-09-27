@@ -106,10 +106,8 @@ if __name__ == "__main__":
     logger = get_logger()
 
     # Test the logger with a sample message containing PII
-    test_message = ("name=John Doe;email=john.doe@example.com;phone=123-456-7890;"
-                   "ssn=123-45-6789;password=secret123;"
-                    "age=30;city=New York;"
-                   )
+    test_message = ("""name=John Doe;email=john.doe@example.com;phone=123-456-7890;
+                   ssn=123-45-6789;password=secret123;age=30;city=New York""")
 
     logger.info(test_message)
 
