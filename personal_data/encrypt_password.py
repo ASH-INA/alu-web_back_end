@@ -2,7 +2,8 @@
 """
 Password Encryption Module
 
-This module provides functionality for hashing and verifying passwords using bcrypt.
+This module provides functionality for hashing 
+and verifying passwords using bcrypt.
 """
 
 import bcrypt
