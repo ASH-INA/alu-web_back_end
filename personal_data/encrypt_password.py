@@ -2,7 +2,7 @@
 """
 Password Encryption Module
 
-This module provides functionality for hashing 
+This module provides functionality for hashing
 and verifying passwords using bcrypt.
 """
 
