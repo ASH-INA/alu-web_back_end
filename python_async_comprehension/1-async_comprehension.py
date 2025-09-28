@@ -1,34 +1,47 @@
 #!/usr/bin/env python3
 """
-Async Comprehension Module
+Measure Runtime Module
 
-This module contains a coroutine that uses async comprehension to collect
-random numbers from an asynchronous generator.
+This module measures the total runtime of executing async_comprehension
+four times in parallel using asyncio.gather.
 """
 
 import asyncio
+import time
 from typing import List
 
-# Import the async_generator from the previous task
-async_generator = __import__('0-async_generator').async_generator
+# Import async_comprehension from the previous file
+async_comprehension = __import__(
+    '1-async_comprehension'
+).async_comprehension
 
 
-async def async_comprehension() -> List[float]:
+async def measure_runtime() -> float:
     """
-    Collect 10 random numbers using async comprehension.
-
-    This coroutine uses an async comprehension over async_generator
-    to collect 10 random numbers and return them as a list.
+    Execute async_comprehension four times in 
+    parallel and measure total runtime.
 
     Returns:
-        List[float]: A list of 10 random numbers between 0 and 10.
+        float: Total runtime in seconds
     """
-    return [i async for i in async_generator()]
+    start_time = time.time()
+
+    # Execute four async_comprehension calls in parallel
+    await asyncio.gather(
+        async_comprehension(),
+        async_comprehension(),
+        async_comprehension(),
+        async_comprehension()
+    )
+
+    end_time = time.time()
+    return end_time - start_time
+
 
 # For testing the module directly
 if __name__ == "__main__":
     async def main():
-        result = await async_comprehension()
-        print(result)
+        runtime = await measure_runtime()
+        print(runtime)
 
     asyncio.run(main())
