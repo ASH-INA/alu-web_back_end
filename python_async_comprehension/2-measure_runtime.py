@@ -8,12 +8,10 @@ four times in parallel using asyncio.gather.
 
 import asyncio
 import time
-from typing import List
+
 
 # Import async_comprehension from the previous file
-async_comprehension = __import__(
-    '1-async_comprehension'
-).async_comprehension
+
 
 
 async def measure_runtime() -> float:
@@ -37,6 +35,9 @@ async def measure_runtime() -> float:
     end_time = time.time()
     return end_time - start_time
 
+async_comprehension = __import__(
+    '1-async_comprehension'
+).async_comprehension
 
 # For testing the module directly
 if __name__ == "__main__":
